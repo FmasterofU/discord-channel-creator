@@ -39,9 +39,24 @@ async def create_channels(
     async with client:
         await client.login(token)
 
-        guild: discord.Guild | None = await client.fetch_guild(guild_id)
-        if guild is None:
-            print(f"Error: Guild with ID {guild_id} not found.", file=sys.stderr)
+        try:
+            guild: discord.Guild = await client.fetch_guild(guild_id)
+        except discord.NotFound:
+            print(
+                f"Error: Guild with ID {guild_id} not found (Discord error 10004).\n"
+                "Common causes:\n"
+                "  • The bot has not been added to the server. Invite it at:\n"
+                "    https://discord.com/oauth2/authorize?client_id=<YOUR_CLIENT_ID>&scope=bot&permissions=16\n"
+                "  • The Guild ID is incorrect. Right-click the server icon in Discord "
+                "(with Developer Mode enabled) and choose 'Copy Server ID'.",
+                file=sys.stderr,
+            )
+            return
+        except discord.Forbidden:
+            print(
+                f"Error: The bot does not have permission to access guild {guild_id}.",
+                file=sys.stderr,
+            )
             return
 
         # Find or create the category
