@@ -91,7 +91,7 @@ Go to your repository → **Settings → Secrets and variables → Actions → N
 | `DISCORD_TOKEN` | Your Discord bot token |
 | `GUILD_ID` | Your Discord server (guild) ID |
 
-These values are stored encrypted by GitHub and are masked in logs when printed.
+These values are stored encrypted by GitHub, which automatically masks secret values in logs to prevent accidental exposure.
 
 ### 2. Trigger the workflow
 
