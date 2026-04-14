@@ -1,0 +1,57 @@
+name: Create Discord Channels
+
+on:
+  workflow_dispatch:
+    inputs:
+      category:
+        description: "Name of the category to place channels under (created if it does not exist)"
+        required: true
+        type: string
+      channels:
+        description: "Space-separated list of channel names to create (e.g. general announcements off-topic)"
+        required: true
+        type: string
+      channel_type:
+        description: "Type of channels to create"
+        required: false
+        default: "text"
+        type: choice
+        options:
+          - text
+          - voice
+
+jobs:
+  create-channels:
+    name: Create Discord Channels
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Create Discord channels
+        env:
+          DISCORD_TOKEN: ${{ secrets.DISCORD_TOKEN }}
+          GUILD_ID: ${{ secrets.GUILD_ID }}
+          INPUT_CATEGORY: ${{ inputs.category }}
+          INPUT_CHANNELS: ${{ inputs.channels }}
+          INPUT_TYPE: ${{ inputs.channel_type }}
+        run: |
+          # Split INPUT_CHANNELS on spaces into a bash array so each name is
+          # passed as a separate, properly-quoted argument to the Python script.
+          IFS=' ' read -ra channels <<< "$INPUT_CHANNELS"
+          python3 create_channels.py \
+            --category "$INPUT_CATEGORY" \
+            --channels "${channels[@]}" \
+            --type "$INPUT_TYPE"

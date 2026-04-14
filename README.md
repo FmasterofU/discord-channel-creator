@@ -78,6 +78,35 @@ python3 create_channels.py \
   --channels channel-one channel-two
 ```
 
+## GitHub Actions
+
+You can run this script directly from GitHub without any local setup.
+
+### 1. Add repository secrets
+
+Go to your repository → **Settings → Secrets and variables → Actions → New repository secret** and add:
+
+| Secret name | Value |
+|---|---|
+| `DISCORD_TOKEN` | Your Discord bot token |
+| `GUILD_ID` | Your Discord server (guild) ID |
+
+These values are stored encrypted by GitHub and are never exposed in logs.
+
+### 2. Trigger the workflow
+
+Go to **Actions → Create Discord Channels → Run workflow** and fill in:
+
+| Input | Description |
+|---|---|
+| `category` | Name of the category to place channels under |
+| `channels` | Space-separated channel names (e.g. `general announcements off-topic`) |
+| `channel_type` | `text` or `voice` (default: `text`) |
+
+The workflow checks out the repository, installs dependencies, and runs `create_channels.py` with the secrets injected securely as environment variables. The token and guild ID are never visible in the workflow logs or inputs.
+
+---
+
 ## Notes
 
 - If the specified category already exists, the script uses it; otherwise it creates a new one.
