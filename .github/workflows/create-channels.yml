@@ -51,6 +51,16 @@ jobs:
           # Split INPUT_CHANNELS on spaces into a bash array so each name is
           # passed as a separate, properly-quoted argument to the Python script.
           IFS=' ' read -ra channels <<< "$INPUT_CHANNELS"
+
+          # Reject any channel name that starts with '-' to prevent argparse
+          # from interpreting it as a flag and potentially overriding secrets.
+          for ch in "${channels[@]}"; do
+            if [[ "$ch" == -* ]]; then
+              echo "Error: channel name '${ch}' must not start with '-'." >&2
+              exit 1
+            fi
+          done
+
           python3 create_channels.py \
             --category "$INPUT_CATEGORY" \
             --channels "${channels[@]}" \
