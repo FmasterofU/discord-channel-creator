@@ -91,7 +91,7 @@ Go to your repository → **Settings → Secrets and variables → Actions → N
 | `DISCORD_TOKEN` | Your Discord bot token |
 | `GUILD_ID` | Your Discord server (guild) ID |
 
-These values are stored encrypted by GitHub and are never exposed in logs.
+These values are stored encrypted by GitHub, which automatically masks secret values in logs to prevent accidental exposure.
 
 ### 2. Trigger the workflow
 
@@ -100,8 +100,10 @@ Go to **Actions → Create Discord Channels → Run workflow** and fill in:
 | Input | Description |
 |---|---|
 | `category` | Name of the category to place channels under |
-| `channels` | Space-separated channel names (e.g. `general announcements off-topic`) |
+| `channels` | Space-separated channel names (e.g. `general announcements off-topic`). **Channel names with spaces are not supported in this workflow input format**; use hyphens or underscores instead (for example, `room-1 room-2`). |
 | `channel_type` | `text` or `voice` (default: `text`) |
+
+> **Note:** The GitHub Actions `channels` input is parsed as space-separated values, so it cannot represent a single channel name containing spaces such as `Room 1`. If you need spaces in channel names, run the script directly from the command line instead, where quoted names are supported.
 
 The workflow checks out the repository, installs dependencies, and runs `create_channels.py` with the secrets injected securely as environment variables. The token and guild ID are never visible in the workflow logs or inputs.
 
